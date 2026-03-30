@@ -7,7 +7,7 @@ import "github.com/Rafael24595/go-assert/assert/internal"
 // Unreachable panics with a formatted message, indicating that 
 // a section of code should not have been reached.
 func Unreachable(a ...any) {
-	msg := internal.FormatMessage(a)
+	msg := internal.FormatMessage(a...)
 	panic(msg)
 }
 
@@ -17,7 +17,7 @@ func True(cond bool, a ...any) {
 		return
 	}
 
-	msg := internal.FormatMessage(a)
+	msg := internal.FormatMessage(a...)
 	panic(msg)
 }
 
@@ -27,7 +27,7 @@ func False(cond bool, a ...any) {
 		return
 	}
 
-	msg := internal.FormatMessage(a)
+	msg := internal.FormatMessage(a...)
 	panic(msg)
 }
 
@@ -37,7 +37,7 @@ func LazyTrue(p predicate, a ...any) {
 		return
 	}
 
-	msg := internal.FormatMessage(a)
+	msg := internal.FormatMessage(a...)
 	panic(msg)
 }
 
@@ -47,6 +47,6 @@ func LazyFalse(p predicate, a ...any) {
 		return
 	}
 
-	msg := internal.FormatMessage(a)
+	msg := internal.FormatMessage(a...)
 	panic(msg)
 }
