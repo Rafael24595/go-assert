@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"strings"
 	"testing"
 )
 
@@ -21,7 +20,7 @@ func TestFormatMessage(t *testing.T) {
 
 	t.Run("Format string with args", func(t *testing.T) {
 		got := FormatMessage("hello %s", "golang")
-		want := "hola mundo"
+		want := "hello golang"
 		if got != want {
 			t.Errorf("Expected %q, got %q", want, got)
 		}
@@ -29,10 +28,6 @@ func TestFormatMessage(t *testing.T) {
 
 	t.Run("Multiple values without format string", func(t *testing.T) {
 		got := FormatMessage("valor1", "valor2", 100)
-		if !strings.Contains(got, "valor1") || strings.Contains(got, "EXTRA") {
-			t.Errorf("Unexpected format: %q", got)
-		}
-		
 		want := "valor1%!(EXTRA string=valor2, int=100)"
 		if got != want {
 			t.Errorf("Unexpected format: %q", got)
