@@ -4,45 +4,47 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 )
 
 type MyInt int
 
 type customError struct{}
+
 func (e *customError) Error() string { return "" }
 
 func TestNilDeep(t *testing.T) {
-    t.Run("Nil interfaces and pointers", func(t *testing.T) {
-        var err error = (*customError)(nil)
-        var p *int = nil
-        Nil(t, err)
-        Nil(t, p)
-        Nil(t, nil)
-    })
+	t.Run("Nil interfaces and pointers", func(t *testing.T) {
+		var err error = (*customError)(nil)
+		var p *int = nil
+		Nil(t, err)
+		Nil(t, p)
+		Nil(t, nil)
+	})
 
-    t.Run("Nil collections", func(t *testing.T) {
-        var s []int = nil
-        var m map[string]int = nil
-        var c chan int = nil
-        Nil(t, s)
-        Nil(t, m)
-        Nil(t, c)
-    })
+	t.Run("Nil collections", func(t *testing.T) {
+		var s []int = nil
+		var m map[string]int = nil
+		var c chan int = nil
+		Nil(t, s)
+		Nil(t, m)
+		Nil(t, c)
+	})
 }
 
 func TestNotNilDeep(t *testing.T) {
-    t.Run("Nil zero values", func(t *testing.T) {
-        NotNil(t, 0)
-        NotNil(t, "")
-        NotNil(t, false)
-        NotNil(t, struct{}{})
-    })
+	t.Run("Nil zero values", func(t *testing.T) {
+		NotNil(t, 0)
+		NotNil(t, "")
+		NotNil(t, false)
+		NotNil(t, struct{}{})
+	})
 
-    t.Run("Nil empty collections", func(t *testing.T) {
-        NotNil(t, []int{}) 
-        NotNil(t, make(map[string]int))
-        NotNil(t, make(chan int))
-    })
+	t.Run("Nil empty collections", func(t *testing.T) {
+		NotNil(t, []int{})
+		NotNil(t, make(map[string]int))
+		NotNil(t, make(chan int))
+	})
 }
 
 func TestBoolean(t *testing.T) {
@@ -63,8 +65,8 @@ func TestEqual(t *testing.T) {
 }
 
 func TestNotEqual(t *testing.T) {
-    NotEqual(t, 10, 20)
-    NotEqual(t, "ziglang", "golang")
+	NotEqual(t, 10, 20)
+	NotEqual(t, "ziglang", "golang")
 }
 
 func TestNumericComparisons(t *testing.T) {
@@ -142,19 +144,19 @@ func TestLen(t *testing.T) {
 }
 
 func TestLenExtended(t *testing.T) {
-    t.Run("String length", func(t *testing.T) {
-        Len(t, 6, "Gopher")
-    })
-    t.Run("Map length", func(t *testing.T) {
-        m := map[int]string{1: "a", 2: "b"}
-        Len(t, 2, m)
-    })
-    t.Run("Channel length", func(t *testing.T) {
-        ch := make(chan int, 5)
-        ch <- 1
-        ch <- 2
-        Len(t, 2, ch)
-    })
+	t.Run("String length", func(t *testing.T) {
+		Len(t, 6, "Gopher")
+	})
+	t.Run("Map length", func(t *testing.T) {
+		m := map[int]string{1: "a", 2: "b"}
+		Len(t, 2, m)
+	})
+	t.Run("Channel length", func(t *testing.T) {
+		ch := make(chan int, 5)
+		ch <- 1
+		ch <- 2
+		Len(t, 2, ch)
+	})
 }
 
 func TestContains(t *testing.T) {
@@ -190,16 +192,36 @@ func TestContains(t *testing.T) {
 	})
 
 	t.Run("Map keys", func(t *testing.T) {
-        m := map[string]int{"A": 1, "B": 2}
-        
-        Contains(t, m, "A")   
-        NotContains(t, m, "C")
-    })
+		m := map[string]int{"A": 1, "B": 2}
 
-    t.Run("Map with struct keys", func(t *testing.T) {
-        type ID struct{ Num int }
-        m := map[ID]bool{{Num: 1}: true}
-        
-        Contains(t, m, ID{Num: 1})
-    })
+		Contains(t, m, "A")
+		NotContains(t, m, "C")
+	})
+
+	t.Run("Map with struct keys", func(t *testing.T) {
+		type ID struct{ Num int }
+		m := map[ID]bool{{Num: 1}: true}
+
+		Contains(t, m, ID{Num: 1})
+	})
+}
+
+func TestWillClose(t *testing.T) {
+	t.Run("Success when channel closes in time", func(t *testing.T) {
+		ch := make(chan struct{})
+
+		go func() {
+			time.Sleep(10 * time.Millisecond)
+			close(ch)
+		}()
+
+		WillClose(t, ch, 100*time.Millisecond)
+	})
+
+	t.Run("Success when channel receives signal", func(t *testing.T) {
+		ch := make(chan struct{}, 1)
+		ch <- struct{}{}
+
+		WillClose(t, ch, 100*time.Millisecond)
+	})
 }
