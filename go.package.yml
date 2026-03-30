@@ -2,5 +2,5 @@ version: '1.1'
 
 project:
   name: go-assert
-  version: v0.1.0
+  version: v0.1.1
   description: Go Assert
