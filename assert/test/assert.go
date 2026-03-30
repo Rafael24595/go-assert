@@ -15,38 +15,38 @@ import (
 func Nil(t *testing.T, item any, message ...any) {
 	t.Helper()
 
+	if isNil(item) {
+		return
+	}
+
 	custom := formatMessage(message...)
-
-	if item != nil {
-		t.Errorf("%sExpected nil value", custom)
-	}
-
-	v := reflect.ValueOf(item)
-	switch v.Kind() {
-	case reflect.Func, reflect.Pointer, reflect.Map, reflect.Slice, reflect.Interface, reflect.Chan:
-		if !v.IsNil() {
-			t.Errorf("%sUnexpected nil value", custom)
-		}
-	}
+	t.Errorf("%sExpected nil value", custom)
 }
 
 // NotNil fails the test if the provided item is nil or a nil pointer/interface.
 func NotNil(t *testing.T, item any, message ...any) {
 	t.Helper()
 
-	custom := formatMessage(message...)
+	if !isNil(item) {
+		return
+	}
 
+	custom := formatMessage(message...)
+	t.Errorf("%sUnexpected nil value", custom)
+}
+
+func isNil(item any) bool {
 	if item == nil {
-		t.Errorf("%sUnexpected nil value", custom)
+		return true
 	}
 
 	v := reflect.ValueOf(item)
 	switch v.Kind() {
-	case reflect.Func, reflect.Pointer, reflect.Map, reflect.Slice, reflect.Interface, reflect.Chan:
-		if v.IsNil() {
-			t.Errorf("%sUnexpected nil value", custom)
-		}
+	case reflect.Chan, reflect.Func, reflect.Map, reflect.Pointer, reflect.UnsafePointer, reflect.Interface, reflect.Slice:
+		return v.IsNil()
 	}
+
+	return false
 }
 
 // True fails the test if the result is false.
@@ -115,7 +115,7 @@ func DeepEqual(t *testing.T, want, have any, message ...any) {
 	t.Errorf("%sExpected deep equality.\nWant: %+v\nGot:  %+v", custom, want, have)
 }
 
-// InDelta fails the test if the absolute difference between want and have 
+// InDelta fails the test if the absolute difference between want and have
 // is greater than the specified delta.
 func InDelta(t *testing.T, want, have, delta float64, message ...any) {
 	t.Helper()
@@ -208,7 +208,7 @@ func NotError(t *testing.T, err error, message ...any) {
 	t.Errorf("%sUnexpected error found: '%s'", custom, err.Error())
 }
 
-// Len fails the test if the length of 'have' does not match 'want'. 
+// Len fails the test if the length of 'have' does not match 'want'.
 // It supports Slice, Map, Array, Chan, and String.
 func Len(t *testing.T, want int, have any, message ...any) {
 	t.Helper()
@@ -229,73 +229,61 @@ func Len(t *testing.T, want int, have any, message ...any) {
 }
 
 // Contains fails the test if the container (string, slice, or array) does not include the item.
-func Contains[T comparable](t *testing.T, container any, item T, message ...any) {
+func Contains(t *testing.T, container any, item any, message ...any) {
 	t.Helper()
 
-	custom := formatMessage(message...)
-
-	val := reflect.ValueOf(container)
-
-	switch val.Kind() {
-	case reflect.String:
-		substr, ok := any(item).(string)
-		if !ok {
-			t.Fatalf("%sCannot search non-string in string container", custom)
-		}
-
-		if !strings.Contains(val.String(), substr) {
-			t.Errorf("%sExpected '%s' to contain '%s'", custom, val.String(), substr)
-		}
-
-		return
-	case reflect.Slice, reflect.Array:
-		for i := 0; i < val.Len(); i++ {
-			elem := val.Index(i).Interface()
-			if elem == item {
-				return
-			}
-		}
-
-		t.Errorf("%sExpected slice/array to contain '%v'", custom, item)
-
+	if contains(t, container, item) {
 		return
 	}
 
-	t.Fatalf("%sContains not supported for type %s", custom, val.Kind())
+	custom := formatMessage(message...)
+	t.Errorf("%sExpected collection to contain '%v'", custom, item)
 }
 
 // NotContains fails the test if the container includes the item.
-func NotContains[T comparable](t *testing.T, container any, item T, message ...any) {
+func NotContains(t *testing.T, container any, item any, message ...any) {
 	t.Helper()
 
-	custom := formatMessage(message...)
-
-	val := reflect.ValueOf(container)
-	switch val.Kind() {
-	case reflect.String:
-		substr, ok := any(item).(string)
-		if !ok {
-			t.Fatalf("%sCannot search non-string in string container", custom)
-		}
-
-		if strings.Contains(val.String(), substr) {
-			t.Errorf("%sExpected '%s' NOT to contain '%s'", custom, val.String(), substr)
-		}
-
-		return
-	case reflect.Slice, reflect.Array:
-		for i := 0; i < val.Len(); i++ {
-			elem := val.Index(i).Interface()
-			if elem == item {
-				t.Errorf("%sExpected slice/array NOT to contain '%v'", custom, item)
-				return
-			}
-		}
-
+	if !contains(t, container, item) {
 		return
 	}
 
-	t.Fatalf("%sNotContains not supported for type %s", custom, val.Kind())
+	custom := formatMessage(message...)
+	t.Errorf("%sExpected collection NOT to contain '%v'", custom, item)
+}
+
+func contains(t *testing.T, container any, item any) bool {
+	t.Helper()
+
+	val := reflect.ValueOf(container)
+
+	switch val.Kind() {
+	case reflect.String:
+		strItem, ok := item.(string)
+		if !ok {
+			return false
+		}
+		return strings.Contains(val.String(), strItem)
+
+	case reflect.Slice, reflect.Array:
+		for i := 0; i < val.Len(); i++ {
+			if reflect.DeepEqual(val.Index(i).Interface(), item) {
+				return true
+			}
+		}
+	case reflect.Map:
+		itemVal := reflect.ValueOf(item)
+		if !itemVal.IsValid() {
+			return false
+		}
+
+		if itemVal.Type().AssignableTo(val.Type().Key()) {
+			return val.MapIndex(itemVal).IsValid()
+		}
+	default:
+		t.Fatalf("Contains does not support type %T", container)
+	}
+	return false
 }
 
 // Panic fails the test if the provided function does not panic.
