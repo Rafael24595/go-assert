@@ -69,11 +69,107 @@ func TestNotEqual(t *testing.T) {
 	NotEqual(t, "ziglang", "golang")
 }
 
-func TestNumericComparisons(t *testing.T) {
-	Greater(t, 5, 10)
-	Less(t, 20, 10)
-	GreaterOrEqual(t, 5, 5)
-	LessOrEqual(t, 10, 10)
+func TestLess(t *testing.T) {
+	t.Run("numbers", func(t *testing.T) {
+		Less(t, 20, 10)
+		Less(t, 20.5, 10)
+		Less(t, 0, -10)
+	})
+
+	t.Run("string length", func(t *testing.T) {
+		Less(t, 10, "go")
+	})
+
+	t.Run("slice length", func(t *testing.T) {
+		Less(t, 5, []int{1, 2})
+	})
+
+	t.Run("map length", func(t *testing.T) {
+		Less(t, 3, map[string]int{
+			"go":   1,
+			"rust": 2,
+		})
+	})
+}
+
+func TestLessOrEqual(t *testing.T) {
+	t.Run("equal numbers", func(t *testing.T) {
+		LessOrEqual(t, 10, 10)
+		LessOrEqual(t, 10.5, 10)
+	})
+
+	t.Run("string length", func(t *testing.T) {
+		LessOrEqual(t, 5, "hello")
+	})
+
+	t.Run("map length", func(t *testing.T) {
+		LessOrEqual(t, 2, map[string]int{
+			"a": 1,
+			"b": 2,
+		})
+	})
+
+	t.Run("map length", func(t *testing.T) {
+		LessOrEqual(t, 2, map[string]int{
+			"go":   1,
+			"rust": 2,
+		})
+	})
+}
+
+func TestGreater(t *testing.T) {
+	t.Run("numbers", func(t *testing.T) {
+		Greater(t, 5, 10)
+		Greater(t, 5.5, 10)
+		Greater(t, -10, 0)
+	})
+
+	t.Run("string length", func(t *testing.T) {
+		Greater(t, 3, "golang")
+	})
+
+	t.Run("slice length", func(t *testing.T) {
+		Greater(t, 2, []string{
+			"go",
+			"rust",
+			"zig",
+		})
+	})
+
+	t.Run("map length", func(t *testing.T) {
+		Greater(t, 1, map[string]int{
+			"go":   1,
+			"rust": 2,
+		})
+	})
+}
+
+func TestGreaterOrEqual(t *testing.T) {
+	t.Run("numbers", func(t *testing.T) {
+		GreaterOrEqual(t, 5, 5)
+		GreaterOrEqual(t, 5, 6)
+		GreaterOrEqual(t, 5.5, 6)
+		GreaterOrEqual(t, -5, 6)
+	})
+
+	t.Run("string length", func(t *testing.T) {
+		GreaterOrEqual(t, 6, "golang")
+	})
+
+	t.Run("slice length", func(t *testing.T) {
+		GreaterOrEqual(t, 3, []string{
+			"golang",
+			"zig",
+			"rust",
+		})
+	})
+
+	t.Run("map length", func(t *testing.T) {
+		GreaterOrEqual(t, 2, map[string]int{
+			"go":   1,
+			"rust": 2,
+		})
+	})
 }
 
 func TestInDelta(t *testing.T) {

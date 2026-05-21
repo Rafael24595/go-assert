@@ -1,7 +1,6 @@
 package assert
 
 import (
-	"cmp"
 	"fmt"
 	"math"
 	"reflect"
@@ -132,10 +131,15 @@ func InDelta(t *testing.T, want, have, delta float64, message ...any) {
 }
 
 // Greater fails the test if have is not greater than want.
-func Greater[T cmp.Ordered](t *testing.T, want, have T, message ...any) {
+func Greater[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
-	if have > want {
+	got, ok := internal.ToNumber(want, have)
+	if !ok {
+		t.Fatalf("Greater(): %T is not measurable or convertible to %T", have, want)
+	}
+
+	if got > want {
 		return
 	}
 
@@ -145,10 +149,15 @@ func Greater[T cmp.Ordered](t *testing.T, want, have T, message ...any) {
 }
 
 // GreaterOrEqual fails the test if have is not greater than or equal to want.
-func GreaterOrEqual[T cmp.Ordered](t *testing.T, want, have T, message ...any) {
+func GreaterOrEqual[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
-	if have >= want {
+	got, ok := internal.ToNumber(want, have)
+	if !ok {
+		t.Fatalf("GreaterOrEqual(): %T is not measurable or convertible to %T", have, want)
+	}
+
+	if got >= want {
 		return
 	}
 
@@ -158,10 +167,15 @@ func GreaterOrEqual[T cmp.Ordered](t *testing.T, want, have T, message ...any) {
 }
 
 // Less fails the test if have is not less than want.
-func Less[T cmp.Ordered](t *testing.T, want, have T, message ...any) {
+func Less[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
-	if have < want {
+	got, ok := internal.ToNumber(want, have)
+	if !ok {
+		t.Fatalf("Less(): %T is not measurable or convertible to %T", have, want)
+	}
+
+	if got < want {
 		return
 	}
 
@@ -171,10 +185,15 @@ func Less[T cmp.Ordered](t *testing.T, want, have T, message ...any) {
 }
 
 // LessOrEqual fails the test if have is not less than or equal to want.
-func LessOrEqual[T cmp.Ordered](t *testing.T, want, have T, message ...any) {
+func LessOrEqual[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
-	if have <= want {
+	got, ok := internal.ToNumber(want, have)
+	if !ok {
+		t.Fatalf("LessOrEqual(): %T is not measurable or convertible to %T", have, want)
+	}
+
+	if got <= want {
 		return
 	}
 
@@ -211,21 +230,16 @@ func NotError(t *testing.T, err error, message ...any) {
 
 // Len fails the test if the length of 'have' does not match 'want'.
 // It supports Slice, Map, Array, Chan, and String.
-func Len(t *testing.T, want int, have any, message ...any) {
+func Len[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
-	v := reflect.ValueOf(have)
-	var got int
-
-	switch v.Kind() {
-	case reflect.Slice, reflect.Map, reflect.Array, reflect.Chan, reflect.String:
-		got = v.Len()
-	default:
-		t.Fatalf("Len() assert: type %T is not measurable", have)
+	got, ok := internal.ToNumber(want, have)
+	if !ok {
+		t.Fatalf("Len(): %T is not measurable or convertible to %T", have, want)
 	}
 
 	if want != got {
-		t.Fatalf("%sExpected %d, but got %d", formatMessage(message...), want, got)
+		t.Fatalf("%sExpected %v, but got %v", formatMessage(message...), want, got)
 	}
 }
 
@@ -334,7 +348,7 @@ func NotPanic(t *testing.T, fn func(), message ...any) {
 	fn()
 }
 
-// WillClose fails the test if the provided channel does not close or 
+// WillClose fails the test if the provided channel does not close or
 // receive a signal within the specified timeout duration.
 func WillClose(t *testing.T, ch <-chan struct{}, timeout time.Duration, message ...any) {
 	t.Helper()
