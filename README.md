@@ -7,8 +7,8 @@ A lightweight, zero-dependency assertion framework for Go. It provides a flexibl
 ## Features
 
 - Three Modes: Choose between panic, io.Writer logging, or no-op (zero overhead) using build tags.
-- Fluent Testing API: Comprehensive suite of assertions for testing.T (Equal, DeepEqual, Panic, InDelta, etc.).
-- Type Safe: Leverages Go Generics (comparable, cmp.Ordered) for compile-time safety.
+- Comprehensive Testing API: Assertions for `testing.T` including equality, panic, delta, collections, and concurrency helpers.
+- Type Safe: Leverages Go Generics (`comparable` and numeric constraints) for compile-time safety.
 - Idiomatic: Clean, minimal, and follows Go's "less is more" philosophy.
 
 ---
@@ -17,30 +17,6 @@ A lightweight, zero-dependency assertion framework for Go. It provides a flexibl
 
 ```sh
 go get github.com/Rafael24595/go-assert
-```
-
----
-
-## Build Configurations
-
-You can control how the package behaves globally by using -tags during compilation or testing:
-
-| Build Tag | Behavior | Logic Implementation | Best Use Case |
-|:----------|:---------|:---------------------|:--------------|
-| `g_ast_dbg` | **Panic** | `panic(message)`  | Local development & Debugging |
-| `g_ast_wrt` | **Write** | `writer.Write([]byte(msg))` | CI/CD, Staging or Logging |
-| *None (default)*| **No-op** | `func() {}` (Empty body) | Production (Zero overhead) |
-
----
-
-### Usage Examples:
-
-```sh
-# Run tests with panic on assertion failure
-go test -tags g_ast_dbg ./...
-
-# Build your app with logging assertions
-go build -tags g_ast_wrt -o myapp .
 ```
 
 ---
@@ -69,7 +45,8 @@ func main() {
 ```
 
 ### 2. Testing API
-Use the robust set of tools for your *_test.go files.
+
+Use assertions directly with `testing.T`.
 
 ```go
 package main
@@ -80,11 +57,15 @@ import (
 	assert "github.com/Rafael24595/go-assert/assert/test"
 )
 
-func TestCalculation(t *testing.T) {
-	have := 10 + 5
-	assert.Equal(t, 15, have, "Math should work")
+func TestCollections(t *testing.T) {
+	assert.Equal(t, 4, 2+2)
 
-	assert.InDelta(t, 0.333, 1.0/3.0, 0.001)
+	assert.Greater(t, 3, "golang")
+
+	assert.Len(t, 2, map[string]int{
+		"go":   1,
+		"rust": 2,
+	})
 
 	assert.Panic(t, func() {
 		panic("boom")
@@ -94,10 +75,120 @@ func TestCalculation(t *testing.T) {
 
 ---
 
-## API Overview
+## Packages
 
-- Comparison: Equal, NotEqual, Greater, Less, DeepEqual, InDelta.
-- Nullability: Nil, NotNil.
-- Boolean: True, False, LazyTrue, LazyFalse.
-- Collections: Len, Contains, NotContains.
-- Errors & Flow: Error, NotError, Panic, NotPanic, Unreachable.
+The project provides two independent assertion packages:
+
+| Package | Purpose |
+|:--|:--|
+| `assert/runtime` | Runtime assertions controlled through build tags. |
+| `assert/test` | Assertions for `testing.T` in unit tests. |
+
+## Runtime Assertions (`assert/runtime`)
+
+Runtime assertions are controlled globally using Go build tags.
+
+### Available Assertions
+
+| Assertion | Description |
+|:--|:--|
+| `Unreachable` | Marks code paths that should never execute. |
+| `True` | Ensures a condition is true. |
+| `False` | Ensures a condition is false. |
+| `LazyTrue` | Lazily evaluates a condition. |
+| `LazyFalse` | Lazily evaluates a condition. |
+
+### Build Configurations
+
+You can control how the package behaves globally by using -tags during compilation or testing:
+
+| Build Tag | Behavior | Logic Implementation | Best Use Case |
+|:----------|:---------|:---------------------|:--------------|
+| `g_ast_dbg` | **Panic** | `panic(message)`  | Local development & Debugging |
+| `g_ast_wrt` | **Write** | `writer.Write([]byte(msg))` | CI/CD, Staging or Logging |
+| *None (default)*| **No-op** | `func() {}` (Empty body) | Production (Zero overhead) |
+
+### Usage Examples:
+
+```sh
+# Run tests with panic on assertion failure
+go test -tags g_ast_dbg ./...
+
+# Build your app with logging assertions
+go build -tags g_ast_wrt -o myapp .
+```
+
+---
+
+## Testing Assertions (`assert/test`)
+
+The `assert/test` package provides helpers for `testing.T`.
+
+### Equality Assertions
+
+| Assertion | Description |
+|:--|:--|
+| `Nil` | Asserts that the value is nil. |
+| `NotNil` | Asserts that the value is not nil. |
+| `True` | Asserts that the value is true. |
+| `False` | Asserts that the value is false. |
+| `Equal` | Asserts equality between comparable values. |
+| `NotEqual` | Asserts inequality between comparable values. |
+| `DeepEqual` | Asserts deep equality using `reflect.DeepEqual`. |
+| `InDelta` | Asserts floating point proximity within a delta. |
+
+### Ordering Assertions
+
+These assertions support both:
+
+- numeric values
+- measurable values (`string`, `slice`, `array`, `map`, `chan`)
+
+Measurable values are compared using `len(...)`.
+
+| Assertion | Description |
+|:--|:--|
+| `Len` | Asserts `len(have) == want`. |
+| `Less` | Asserts `have < want`. |
+| `LessOrEqual` | Asserts `have <= want`. |
+| `Greater` | Asserts `have > want`. |
+| `GreaterOrEqual` | Asserts `have >= want`. |
+
+### Collection Assertions
+
+| Assertion | Description |
+|:--|:--|
+| `Contains` | Asserts that a container includes a value. |
+| `NotContains` | Asserts that a container does not include a value. |
+
+Supported containers:
+
+- `string`
+- `slice`
+- `array`
+- `map`
+
+### Panic Assertions
+
+| Assertion | Description |
+|:--|:--|
+| `Panic` | Asserts that a function panics. |
+| `PanicWithMessage` | Asserts a panic message. |
+| `NotPanic` | Asserts that a function does not panic. |
+
+### Concurrency Assertions
+
+| Assertion | Description |
+|:--|:--|
+| `WillClose` | Asserts that a channel closes or receives before timeout. |
+
+---
+
+## Why go-assert?
+
+`go-assert` focuses on:
+
+- zero-cost runtime assertions in production
+- simple and idiomatic testing helpers
+- minimal API surface
+- no magic or reflection-heavy DSLs

@@ -1,7 +1,6 @@
 package assert
 
 import (
-	"cmp"
 	"fmt"
 	"math"
 	"reflect"
@@ -131,37 +130,31 @@ func InDelta(t *testing.T, want, have, delta float64, message ...any) {
 	t.Errorf("%sExpected %f and %f to be within %f of each other", custom, want, have, delta)
 }
 
-// Greater fails the test if have is not greater than want.
-func Greater[T cmp.Ordered](t *testing.T, want, have T, message ...any) {
+// Len fails the test if the length of 'have' does not match 'want'.
+// It supports Slice, Map, Array, Chan, and String.
+func Len[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
-	if have > want {
-		return
+	got, ok := internal.ToNumber(want, have)
+	if !ok {
+		t.Fatalf("Len(): %T is not measurable or convertible to %T", have, want)
 	}
 
-	custom := formatMessage(message...)
-
-	t.Errorf("%sExpected greater than %v, but got %v", custom, want, have)
-}
-
-// GreaterOrEqual fails the test if have is not greater than or equal to want.
-func GreaterOrEqual[T cmp.Ordered](t *testing.T, want, have T, message ...any) {
-	t.Helper()
-
-	if have >= want {
-		return
+	if want != got {
+		t.Fatalf("%sExpected %v, but got %v", formatMessage(message...), want, got)
 	}
-
-	custom := formatMessage(message...)
-
-	t.Errorf("%sExpected greater or equal than %v, but got %v", custom, want, have)
 }
 
 // Less fails the test if have is not less than want.
-func Less[T cmp.Ordered](t *testing.T, want, have T, message ...any) {
+func Less[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
-	if have < want {
+	got, ok := internal.ToNumber(want, have)
+	if !ok {
+		t.Fatalf("Less(): %T is not measurable or convertible to %T", have, want)
+	}
+
+	if got < want {
 		return
 	}
 
@@ -171,10 +164,15 @@ func Less[T cmp.Ordered](t *testing.T, want, have T, message ...any) {
 }
 
 // LessOrEqual fails the test if have is not less than or equal to want.
-func LessOrEqual[T cmp.Ordered](t *testing.T, want, have T, message ...any) {
+func LessOrEqual[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
-	if have <= want {
+	got, ok := internal.ToNumber(want, have)
+	if !ok {
+		t.Fatalf("LessOrEqual(): %T is not measurable or convertible to %T", have, want)
+	}
+
+	if got <= want {
 		return
 	}
 
@@ -183,6 +181,44 @@ func LessOrEqual[T cmp.Ordered](t *testing.T, want, have T, message ...any) {
 	t.Errorf("%sExpected less or equal than %v, but got %v", custom, want, have)
 }
 
+// Greater fails the test if have is not greater than want.
+func Greater[T internal.Number](t *testing.T, want T, have any, message ...any) {
+	t.Helper()
+
+	got, ok := internal.ToNumber(want, have)
+	if !ok {
+		t.Fatalf("Greater(): %T is not measurable or convertible to %T", have, want)
+	}
+
+	if got > want {
+		return
+	}
+
+	custom := formatMessage(message...)
+
+	t.Errorf("%sExpected greater than %v, but got %v", custom, want, have)
+}
+
+// GreaterOrEqual fails the test if have is not greater than or equal to want.
+func GreaterOrEqual[T internal.Number](t *testing.T, want T, have any, message ...any) {
+	t.Helper()
+
+	got, ok := internal.ToNumber(want, have)
+	if !ok {
+		t.Fatalf("GreaterOrEqual(): %T is not measurable or convertible to %T", have, want)
+	}
+
+	if got >= want {
+		return
+	}
+
+	custom := formatMessage(message...)
+
+	t.Errorf("%sExpected greater or equal than %v, but got %v", custom, want, have)
+}
+
+// Deprecated: Use NotNil instead.
+//
 // Error fails the test if the provided error is nil.
 func Error(t *testing.T, err error, message ...any) {
 	t.Helper()
@@ -196,6 +232,8 @@ func Error(t *testing.T, err error, message ...any) {
 	t.Errorf("%sExpected error found but nothing found", custom)
 }
 
+// Deprecated: Use Nil instead.
+//
 // NotError fails the test if an error is found (non-nil).
 func NotError(t *testing.T, err error, message ...any) {
 	t.Helper()
@@ -207,26 +245,6 @@ func NotError(t *testing.T, err error, message ...any) {
 	custom := formatMessage(message...)
 
 	t.Errorf("%sUnexpected error found: '%s'", custom, err.Error())
-}
-
-// Len fails the test if the length of 'have' does not match 'want'.
-// It supports Slice, Map, Array, Chan, and String.
-func Len(t *testing.T, want int, have any, message ...any) {
-	t.Helper()
-
-	v := reflect.ValueOf(have)
-	var got int
-
-	switch v.Kind() {
-	case reflect.Slice, reflect.Map, reflect.Array, reflect.Chan, reflect.String:
-		got = v.Len()
-	default:
-		t.Fatalf("Len() assert: type %T is not measurable", have)
-	}
-
-	if want != got {
-		t.Fatalf("%sExpected %d, but got %d", formatMessage(message...), want, got)
-	}
 }
 
 // Contains fails the test if the container (string, slice, or array) does not include the item.
@@ -334,7 +352,7 @@ func NotPanic(t *testing.T, fn func(), message ...any) {
 	fn()
 }
 
-// WillClose fails the test if the provided channel does not close or 
+// WillClose fails the test if the provided channel does not close or
 // receive a signal within the specified timeout duration.
 func WillClose(t *testing.T, ch <-chan struct{}, timeout time.Duration, message ...any) {
 	t.Helper()
