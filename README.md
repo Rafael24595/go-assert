@@ -174,8 +174,8 @@ Supported containers:
 |:--|:--|
 | `ErrorType` | Asserts that an error is of a specific type. |
 | `ErrorNotType` | Asserts that an error is not of a specific type. |
-| `ErrorIs` | Asserts that an error matches the expected value, even when wrapped. |
-| `ErrorIsNot` | Asserts that an error does not match the specified value, even when wrapped. |
+| `ErrorIs` | Asserts that an error matches the expected value (sentinel), even when wrapped. |
+| `ErrorIsNot` | Asserts that an error does not match the specified value (sentinel), even when wrapped. |
 
 ### Panic Assertions
 
