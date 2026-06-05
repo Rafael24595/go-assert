@@ -1,6 +1,8 @@
 package assert
 
 import (
+	"errors"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -11,6 +13,15 @@ type MyInt int
 type customError struct{}
 
 func (e *customError) Error() string { return "" }
+
+type anotherCustomError struct{}
+
+func (e *anotherCustomError) Error() string { return "" }
+
+var (
+	errSentinel = errors.New("sentinel error")
+	errAnother  = errors.New("another error")
+)
 
 func TestNilDeep(t *testing.T) {
 	t.Run("Nil interfaces and pointers", func(t *testing.T) {
@@ -332,6 +343,53 @@ func TestContains(t *testing.T) {
 		m := map[ID]bool{{Num: 1}: true}
 
 		Contains(t, m, ID{Num: 1})
+	})
+}
+
+func TestErrorType(t *testing.T) {
+	t.Run("Direct error type match", func(t *testing.T) {
+		var err error = &customError{}
+		ErrorType[*customError](t, err)
+	})
+
+	t.Run("Wrapped error type match", func(t *testing.T) {
+		var err error = fmt.Errorf("context: %w", &customError{})
+		ErrorType[*customError](t, err)
+	})
+}
+
+func TestErrorNotType(t *testing.T) {
+	t.Run("Different error types", func(t *testing.T) {
+		var err error = &customError{}
+		ErrorNotType[*anotherCustomError](t, err)
+	})
+
+	t.Run("Nil error should not match any type", func(t *testing.T) {
+		var err error = nil
+		ErrorNotType[*customError](t, err)
+	})
+}
+
+func TestErrorIs(t *testing.T) {
+	t.Run("Direct error value match", func(t *testing.T) {
+		have := errSentinel
+		ErrorIs(t, errSentinel, have)
+	})
+
+	t.Run("Wrapped error value match", func(t *testing.T) {
+		have := fmt.Errorf("additional context: %w", errSentinel)
+		ErrorIs(t, errSentinel, have)
+	})
+}
+
+func TestErrorIsNot(t *testing.T) {
+	t.Run("Different error values", func(t *testing.T) {
+		ErrorIsNot(t, errSentinel, errAnother)
+	})
+
+	t.Run("Nil error should not match sentinel", func(t *testing.T) {
+		var have error = nil
+		ErrorIsNot(t, errSentinel, have)
 	})
 }
 
