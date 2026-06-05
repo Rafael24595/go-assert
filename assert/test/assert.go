@@ -130,14 +130,14 @@ func InDelta(t *testing.T, want, have, delta float64, message ...any) {
 	t.Errorf("%sExpected %f and %f to be within %f of each other", custom, want, have, delta)
 }
 
-// Len fails the test if the length of 'have' does not match 'want'.
+// Size fails the test if the length of 'have' does not match 'want'.
 // It supports Slice, Map, Array, Chan, and String.
-func Len[T internal.Number](t *testing.T, want T, have any, message ...any) {
+func Size[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
 	got, ok := internal.ToNumber(want, have)
 	if !ok {
-		t.Fatalf("Len(): %T is not measurable or convertible to %T", have, want)
+		t.Fatalf("Size(): %T is not measurable or convertible to %T", have, want)
 	}
 
 	if want != got {
@@ -145,13 +145,23 @@ func Len[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	}
 }
 
-// Less fails the test if have is not less than want.
-func Less[T internal.Number](t *testing.T, want T, have any, message ...any) {
+// Deprecated: Use Size instead.
+//
+// Len fails the test if the length of 'have' does not match 'want'.
+// It supports Slice, Map, Array, Chan, and String.
+func Len[T internal.Number](t *testing.T, want T, have any, message ...any) {
+	t.Helper()
+
+	Size(t, want, have, message...)
+}
+
+// LessThan fails the test if have is not less than want.
+func LessThan[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
 	got, ok := internal.ToNumber(want, have)
 	if !ok {
-		t.Fatalf("Less(): %T is not measurable or convertible to %T", have, want)
+		t.Fatalf("LessThan(): %T is not measurable or convertible to %T", have, want)
 	}
 
 	if got < want {
@@ -161,6 +171,15 @@ func Less[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	custom := formatMessage(message...)
 
 	t.Errorf("%sExpected less than %v, but got %v", custom, want, have)
+}
+
+// Deprecated: Use LessThan instead.
+//
+// Less fails the test if have is not less than want.
+func Less[T internal.Number](t *testing.T, want T, have any, message ...any) {
+	t.Helper()
+
+	LessThan(t, want, have, message...)
 }
 
 // LessOrEqual fails the test if have is not less than or equal to want.
@@ -181,13 +200,13 @@ func LessOrEqual[T internal.Number](t *testing.T, want T, have any, message ...a
 	t.Errorf("%sExpected less or equal than %v, but got %v", custom, want, have)
 }
 
-// Greater fails the test if have is not greater than want.
-func Greater[T internal.Number](t *testing.T, want T, have any, message ...any) {
+// GreaterThan fails the test if have is not greater than want.
+func GreaterThan[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
 	got, ok := internal.ToNumber(want, have)
 	if !ok {
-		t.Fatalf("Greater(): %T is not measurable or convertible to %T", have, want)
+		t.Fatalf("GreaterThan(): %T is not measurable or convertible to %T", have, want)
 	}
 
 	if got > want {
@@ -197,6 +216,15 @@ func Greater[T internal.Number](t *testing.T, want T, have any, message ...any) 
 	custom := formatMessage(message...)
 
 	t.Errorf("%sExpected greater than %v, but got %v", custom, want, have)
+}
+
+// Deprecated: Use GreaterThan instead.
+//
+// Greater fails the test if have is not greater than want.
+func Greater[T internal.Number](t *testing.T, want T, have any, message ...any) {
+	t.Helper()
+
+	GreaterThan(t, want, have, message...)
 }
 
 // GreaterOrEqual fails the test if have is not greater than or equal to want.
@@ -217,11 +245,11 @@ func GreaterOrEqual[T internal.Number](t *testing.T, want T, have any, message .
 	t.Errorf("%sExpected greater or equal than %v, but got %v", custom, want, have)
 }
 
-// Contains fails the test if the container (string, slice, or array) does not include the item.
-func Contains(t *testing.T, container any, item any, message ...any) {
+// Inside fails the test if the container (string, slice, or array) does not include the item.
+func Inside(t *testing.T, item, container any, message ...any) {
 	t.Helper()
 
-	if contains(t, container, item) {
+	if inside(t, item, container) {
 		return
 	}
 
@@ -229,11 +257,11 @@ func Contains(t *testing.T, container any, item any, message ...any) {
 	t.Errorf("%sExpected collection to contain '%v'", custom, item)
 }
 
-// NotContains fails the test if the container includes the item.
-func NotContains(t *testing.T, container any, item any, message ...any) {
+// NotInside fails the test if the container includes the item.
+func NotInside(t *testing.T, item, container any, message ...any) {
 	t.Helper()
 
-	if !contains(t, container, item) {
+	if !inside(t, item, container) {
 		return
 	}
 
@@ -241,7 +269,7 @@ func NotContains(t *testing.T, container any, item any, message ...any) {
 	t.Errorf("%sExpected collection NOT to contain '%v'", custom, item)
 }
 
-func contains(t *testing.T, container any, item any) bool {
+func inside(t *testing.T, item, container any) bool {
 	t.Helper()
 
 	val := reflect.ValueOf(container)
@@ -270,9 +298,37 @@ func contains(t *testing.T, container any, item any) bool {
 			return val.MapIndex(itemVal).IsValid()
 		}
 	default:
-		t.Fatalf("Contains does not support type %T", container)
+		t.Fatalf("Inside does not support type %T", container)
 	}
 	return false
+}
+
+// Deprecated: Use Inside instead.
+//
+// Contains fails the test if the container (string, slice, or array) does not include the item.
+func Contains(t *testing.T, container any, item any, message ...any) {
+	t.Helper()
+
+	if inside(t, item, container) {
+		return
+	}
+
+	custom := formatMessage(message...)
+	t.Errorf("%sExpected collection to contain '%v'", custom, item)
+}
+
+// Deprecated: Use NotInside instead.
+//
+// NotContains fails the test if the container includes the item.
+func NotContains(t *testing.T, container any, item any, message ...any) {
+	t.Helper()
+
+	if !inside(t, item, container) {
+		return
+	}
+
+	custom := formatMessage(message...)
+	t.Errorf("%sExpected collection NOT to contain '%v'", custom, item)
 }
 
 // Panic fails the test if the provided function does not panic.
