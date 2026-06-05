@@ -1,7 +1,6 @@
 package assert
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -69,23 +68,23 @@ func TestNotEqual(t *testing.T) {
 	NotEqual(t, "ziglang", "golang")
 }
 
-func TestLess(t *testing.T) {
+func TestLessThan(t *testing.T) {
 	t.Run("numbers", func(t *testing.T) {
-		Less(t, 20, 10)
-		Less(t, 20.5, 10)
-		Less(t, 0, -10)
+		LessThan(t, 20, 10)
+		LessThan(t, 20.5, 10)
+		LessThan(t, 0, -10)
 	})
 
 	t.Run("string length", func(t *testing.T) {
-		Less(t, 10, "go")
+		LessThan(t, 10, "go")
 	})
 
 	t.Run("slice length", func(t *testing.T) {
-		Less(t, 5, []int{1, 2})
+		LessThan(t, 5, []int{1, 2})
 	})
 
 	t.Run("map length", func(t *testing.T) {
-		Less(t, 3, map[string]int{
+		LessThan(t, 3, map[string]int{
 			"go":   1,
 			"rust": 2,
 		})
@@ -117,19 +116,19 @@ func TestLessOrEqual(t *testing.T) {
 	})
 }
 
-func TestGreater(t *testing.T) {
+func TestGreaterThan(t *testing.T) {
 	t.Run("numbers", func(t *testing.T) {
-		Greater(t, 5, 10)
-		Greater(t, 5.5, 10)
-		Greater(t, -10, 0)
+		GreaterThan(t, 5, 10)
+		GreaterThan(t, 5.5, 10)
+		GreaterThan(t, -10, 0)
 	})
 
 	t.Run("string length", func(t *testing.T) {
-		Greater(t, 3, "golang")
+		GreaterThan(t, 3, "golang")
 	})
 
 	t.Run("slice length", func(t *testing.T) {
-		Greater(t, 2, []string{
+		GreaterThan(t, 2, []string{
 			"go",
 			"rust",
 			"zig",
@@ -137,7 +136,7 @@ func TestGreater(t *testing.T) {
 	})
 
 	t.Run("map length", func(t *testing.T) {
-		Greater(t, 1, map[string]int{
+		GreaterThan(t, 1, map[string]int{
 			"go":   1,
 			"rust": 2,
 		})
@@ -219,39 +218,73 @@ func TestCustomTypes(t *testing.T) {
 	Equal(t, a, b)
 	Greater(t, MyInt(5), a)
 }
-
-func TestErrors(t *testing.T) {
-	t.Run("Error exists", func(t *testing.T) {
-		err := fmt.Errorf("fail")
-		Error(t, err)
-	})
-
-	t.Run("No error expected", func(t *testing.T) {
-		var err error = nil
-		NotError(t, err)
-	})
+func TestSize(t *testing.T) {
+	Size(t, 0, "")
+	Size(t, 0, []int{})
+	Size(t, 3, [3]int{1, 2, 3})
+	Size(t, 0, make(chan int))
 }
 
-func TestLen(t *testing.T) {
-	Len(t, 0, "")
-	Len(t, 0, []int{})
-	Len(t, 3, [3]int{1, 2, 3})
-	Len(t, 0, make(chan int))
-}
-
-func TestLenExtended(t *testing.T) {
+func TestSizeExtended(t *testing.T) {
 	t.Run("String length", func(t *testing.T) {
-		Len(t, 6, "Gopher")
+		Size(t, 6, "Gopher")
 	})
 	t.Run("Map length", func(t *testing.T) {
 		m := map[int]string{1: "a", 2: "b"}
-		Len(t, 2, m)
+		Size(t, 2, m)
 	})
 	t.Run("Channel length", func(t *testing.T) {
 		ch := make(chan int, 5)
 		ch <- 1
 		ch <- 2
-		Len(t, 2, ch)
+		Size(t, 2, ch)
+	})
+}
+
+func TestInside(t *testing.T) {
+	t.Run("Strings", func(t *testing.T) {
+		Inside(t, "awesome", "Go is awesome")
+	})
+
+	t.Run("Slices", func(t *testing.T) {
+		list := []int{10, 20, 30}
+		Inside(t, 20, list)
+		NotInside(t, 40, list)
+	})
+
+	t.Run("Slice of Slices", func(t *testing.T) {
+		matrix := [][]int{{1, 2}, {3, 4}}
+		target := []int{3, 4}
+		Inside(t, target, matrix)
+	})
+
+	t.Run("Slice of Structs with Maps", func(t *testing.T) {
+		type data struct {
+			ID   int
+			Tags map[string]bool
+		}
+
+		list := []data{
+			{ID: 1, Tags: map[string]bool{"active": true}},
+			{ID: 2, Tags: map[string]bool{"admin": false}},
+		}
+
+		target := data{ID: 2, Tags: map[string]bool{"admin": false}}
+		Inside(t, target, list)
+	})
+
+	t.Run("Map keys", func(t *testing.T) {
+		m := map[string]int{"A": 1, "B": 2}
+
+		Inside(t, "A", m)
+		NotInside(t, "C", m)
+	})
+
+	t.Run("Map with struct keys", func(t *testing.T) {
+		type ID struct{ Num int }
+		m := map[ID]bool{{Num: 1}: true}
+
+		Inside(t, ID{Num: 1}, m)
 	})
 }
 

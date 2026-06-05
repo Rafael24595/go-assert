@@ -60,9 +60,9 @@ import (
 func TestCollections(t *testing.T) {
 	assert.Equal(t, 4, 2+2)
 
-	assert.Greater(t, 3, "golang")
+	assert.GreaterThan(t, 3, "golang")
 
-	assert.Len(t, 2, map[string]int{
+	assert.Size(t, 2, map[string]int{
 		"go":   1,
 		"rust": 2,
 	})
@@ -81,8 +81,8 @@ The project provides two independent assertion packages:
 
 | Package | Purpose |
 |:--|:--|
-| `assert/runtime` | Runtime assertions controlled through build tags. |
-| `assert/test` | Assertions for `testing.T` in unit tests. |
+| `github.com/Rafael24595/go-assert/assert/runtime` | Runtime assertions controlled through build tags. |
+| `github.com/Rafael24595/go-assert/assert/test` | Assertions for `testing.T` in unit tests. |
 
 ## Runtime Assertions (`assert/runtime`)
 
@@ -148,18 +148,18 @@ Measurable values are compared using `len(...)`.
 
 | Assertion | Description |
 |:--|:--|
-| `Len` | Asserts `len(have) == want`. |
-| `Less` | Asserts `have < want`. |
+| `Size` | Asserts `len(have) == want`. |
+| `LessThan` | Asserts `have < want`. |
 | `LessOrEqual` | Asserts `have <= want`. |
-| `Greater` | Asserts `have > want`. |
+| `GreaterThan` | Asserts `have > want`. |
 | `GreaterOrEqual` | Asserts `have >= want`. |
 
 ### Collection Assertions
 
 | Assertion | Description |
 |:--|:--|
-| `Contains` | Asserts that a container includes a value. |
-| `NotContains` | Asserts that a container does not include a value. |
+| `Inside` | Asserts that a container includes a value. |
+| `NotInside` | Asserts that a container does not include a value. |
 
 Supported containers:
 
