@@ -217,36 +217,6 @@ func GreaterOrEqual[T internal.Number](t *testing.T, want T, have any, message .
 	t.Errorf("%sExpected greater or equal than %v, but got %v", custom, want, have)
 }
 
-// Deprecated: Use NotNil instead.
-//
-// Error fails the test if the provided error is nil.
-func Error(t *testing.T, err error, message ...any) {
-	t.Helper()
-
-	if err != nil {
-		return
-	}
-
-	custom := formatMessage(message...)
-
-	t.Errorf("%sExpected error found but nothing found", custom)
-}
-
-// Deprecated: Use Nil instead.
-//
-// NotError fails the test if an error is found (non-nil).
-func NotError(t *testing.T, err error, message ...any) {
-	t.Helper()
-
-	if err == nil {
-		return
-	}
-
-	custom := formatMessage(message...)
-
-	t.Errorf("%sUnexpected error found: '%s'", custom, err.Error())
-}
-
 // Contains fails the test if the container (string, slice, or array) does not include the item.
 func Contains(t *testing.T, container any, item any, message ...any) {
 	t.Helper()

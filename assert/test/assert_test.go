@@ -220,18 +220,6 @@ func TestCustomTypes(t *testing.T) {
 	Greater(t, MyInt(5), a)
 }
 
-func TestErrors(t *testing.T) {
-	t.Run("Error exists", func(t *testing.T) {
-		err := fmt.Errorf("fail")
-		Error(t, err)
-	})
-
-	t.Run("No error expected", func(t *testing.T) {
-		var err error = nil
-		NotError(t, err)
-	})
-}
-
 func TestLen(t *testing.T) {
 	Len(t, 0, "")
 	Len(t, 0, []int{})
