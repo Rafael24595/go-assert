@@ -348,24 +348,24 @@ func TestContains(t *testing.T) {
 
 func TestErrorType(t *testing.T) {
 	t.Run("Direct error type match", func(t *testing.T) {
-		var err error = &customError{}
+		err := &customError{}
 		ErrorType[*customError](t, err)
 	})
 
 	t.Run("Wrapped error type match", func(t *testing.T) {
-		var err error = fmt.Errorf("context: %w", &customError{})
+		err := fmt.Errorf("context: %w", &customError{})
 		ErrorType[*customError](t, err)
 	})
 }
 
 func TestErrorNotType(t *testing.T) {
 	t.Run("Different error types", func(t *testing.T) {
-		var err error = &customError{}
+		err := &customError{}
 		ErrorNotType[*anotherCustomError](t, err)
 	})
 
 	t.Run("Nil error should not match any type", func(t *testing.T) {
-		var err error = nil
+		var err error
 		ErrorNotType[*customError](t, err)
 	})
 }

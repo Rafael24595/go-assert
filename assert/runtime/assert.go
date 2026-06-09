@@ -9,6 +9,7 @@ import (
 type predicate func() bool
 
 var (
+	//nolint:unused
 	writer io.Writer = os.Stdout
 	once   sync.Once
 )
