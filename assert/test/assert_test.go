@@ -3,6 +3,7 @@ package assert
 import (
 	"errors"
 	"fmt"
+	"math"
 	"strings"
 	"testing"
 	"time"
@@ -132,6 +133,7 @@ func TestGreaterThan(t *testing.T) {
 		GreaterThan(t, 5, 10)
 		GreaterThan(t, 5.5, 10)
 		GreaterThan(t, -10, 0)
+		GreaterThan(t, 0, uint64(math.MaxUint64))
 	})
 
 	t.Run("string length", func(t *testing.T) {
@@ -229,6 +231,7 @@ func TestCustomTypes(t *testing.T) {
 	Equal(t, a, b)
 	Greater(t, MyInt(5), a)
 }
+
 func TestSize(t *testing.T) {
 	Size(t, 0, "")
 	Size(t, 0, []int{})

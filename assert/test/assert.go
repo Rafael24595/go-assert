@@ -136,13 +136,14 @@ func InDelta(t *testing.T, want, have, delta float64, message ...any) {
 func Size[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
-	got, ok := internal.ToNumber(want, have)
+	got, ok := internal.CompareMagnitude(have, want)
 	if !ok {
 		t.Fatalf("Size(): %T is not measurable or convertible to %T", have, want)
 	}
 
-	if want != got {
-		t.Fatalf("%sExpected %v, but got %v", formatMessage(message...), want, got)
+	if got != 0 {
+		value, _ := internal.MagnitudeOf(have)
+		t.Fatalf("%sExpected %v, but got %v", formatMessage(message...), want, value)
 	}
 }
 
@@ -160,12 +161,12 @@ func Len[T internal.Number](t *testing.T, want T, have any, message ...any) {
 func LessThan[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
-	got, ok := internal.ToNumber(want, have)
+	got, ok := internal.CompareMagnitude(have, want)
 	if !ok {
 		t.Fatalf("LessThan(): %T is not measurable or convertible to %T", have, want)
 	}
 
-	if got < want {
+	if got == -1 {
 		return
 	}
 
@@ -187,12 +188,12 @@ func Less[T internal.Number](t *testing.T, want T, have any, message ...any) {
 func LessOrEqual[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
-	got, ok := internal.ToNumber(want, have)
+	got, ok := internal.CompareMagnitude(have, want)
 	if !ok {
 		t.Fatalf("LessOrEqual(): %T is not measurable or convertible to %T", have, want)
 	}
 
-	if got <= want {
+	if got <= 0 {
 		return
 	}
 
@@ -205,12 +206,12 @@ func LessOrEqual[T internal.Number](t *testing.T, want T, have any, message ...a
 func GreaterThan[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
-	got, ok := internal.ToNumber(want, have)
+	got, ok := internal.CompareMagnitude(have, want)
 	if !ok {
 		t.Fatalf("GreaterThan(): %T is not measurable or convertible to %T", have, want)
 	}
 
-	if got > want {
+	if got == 1 {
 		return
 	}
 
@@ -232,12 +233,12 @@ func Greater[T internal.Number](t *testing.T, want T, have any, message ...any) 
 func GreaterOrEqual[T internal.Number](t *testing.T, want T, have any, message ...any) {
 	t.Helper()
 
-	got, ok := internal.ToNumber(want, have)
+	got, ok := internal.CompareMagnitude(have, want)
 	if !ok {
 		t.Fatalf("GreaterOrEqual(): %T is not measurable or convertible to %T", have, want)
 	}
 
-	if got >= want {
+	if got >= 0 {
 		return
 	}
 
