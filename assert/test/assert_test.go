@@ -236,6 +236,7 @@ func TestSize(t *testing.T) {
 	Size(t, 0, "")
 	Size(t, 0, []int{})
 	Size(t, 3, [3]int{1, 2, 3})
+	Size(t, 1, map[int]string{1: "one"})
 	Size(t, 0, make(chan int))
 }
 
