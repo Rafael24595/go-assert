@@ -149,6 +149,8 @@ Measurable values are compared using `len(...)`.
 | Assertion | Description |
 |:--|:--|
 | `Size` | Asserts `len(have) == want`. |
+| `Empty` | Asserts `len(have) == 0`. |
+| `NotEmpty` | Asserts `len(have) > 0`. |
 | `LessThan` | Asserts `have < want`. |
 | `LessOrEqual` | Asserts `have <= want`. |
 | `GreaterThan` | Asserts `have > want`. |

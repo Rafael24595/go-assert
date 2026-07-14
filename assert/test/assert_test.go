@@ -236,6 +236,7 @@ func TestSize(t *testing.T) {
 	Size(t, 0, "")
 	Size(t, 0, []int{})
 	Size(t, 3, [3]int{1, 2, 3})
+	Size(t, 1, map[int]string{1: "one"})
 	Size(t, 0, make(chan int))
 }
 
@@ -253,6 +254,18 @@ func TestSizeExtended(t *testing.T) {
 		ch <- 2
 		Size(t, 2, ch)
 	})
+}
+
+func TestEmpty(t *testing.T) {
+	Empty(t, "")
+	Empty(t, []int{})
+	Empty(t, make(map[int]string))
+}
+
+func TestNotEmpty(t *testing.T) {
+	NotEmpty(t, "golang")
+	NotEmpty(t, [3]int{1, 2, 3})
+	NotEmpty(t, map[int]string{1: "one"})
 }
 
 func TestInside(t *testing.T) {
