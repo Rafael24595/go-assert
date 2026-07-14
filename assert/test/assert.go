@@ -149,7 +149,7 @@ func Size[T internal.Number](t *testing.T, want T, have any, message ...any) {
 
 
 // Empty fails the test if the length of 'have' is not zero.
-func Empty[T internal.Number](t *testing.T, have any, message ...any) {
+func Empty(t *testing.T, have any, message ...any) {
 	t.Helper()
 
 	Size(t, 0, have, message...)
