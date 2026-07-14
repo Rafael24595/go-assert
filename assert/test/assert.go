@@ -155,6 +155,13 @@ func Empty(t *testing.T, have any, message ...any) {
 	Size(t, 0, have, message...)
 }
 
+// NotEmpty fails the test if the length of 'have' is zero.
+func NotEmpty(t *testing.T, have any, message ...any) {
+	t.Helper()
+
+	GreaterThan(t, 0, have, message...)
+}
+
 // Deprecated: Use Size instead.
 //
 // Len fails the test if the length of 'have' does not match 'want'.

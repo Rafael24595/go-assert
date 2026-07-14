@@ -262,6 +262,12 @@ func TestEmpty(t *testing.T) {
 	Empty(t, make(map[int]string))
 }
 
+func TestNotEmpty(t *testing.T) {
+	NotEmpty(t, "golang")
+	NotEmpty(t, [3]int{1, 2, 3})
+	NotEmpty(t, map[int]string{1: "one"})
+}
+
 func TestInside(t *testing.T) {
 	t.Run("Strings", func(t *testing.T) {
 		Inside(t, "awesome", "Go is awesome")
