@@ -130,6 +130,44 @@ func NotDeepEqual(t *testing.T, want, have any, message ...any) {
 	t.Errorf("%sExpected values to be deeply different.\nWant: %+v\nGot:  %+v", custom, want, have)
 }
 
+// Same fails the test if want and have do not reference the same object.
+func Same(t *testing.T, want, have any, message ...any) {
+	t.Helper()
+
+	v1 := reflect.ValueOf(want)
+	v2 := reflect.ValueOf(have)
+
+	if !isReference(v1.Kind()) || !isReference(v2.Kind()) {
+		t.Fatalf("Same only supports reference types")
+	}
+
+	if v1.Pointer() == v2.Pointer() {
+		return
+	}
+
+	custom := formatMessage(message...)
+	t.Errorf("%sExpected both values to reference the same object", custom)
+}
+
+// NotSame fails the test if want and have reference the same object.
+func NotSame(t *testing.T, want, have any, message ...any) {
+	t.Helper()
+
+	v1 := reflect.ValueOf(want)
+	v2 := reflect.ValueOf(have)
+
+	if !isReference(v1.Kind()) || !isReference(v2.Kind()) {
+		t.Fatalf("NotSame only supports reference types")
+	}
+
+	if v1.Pointer() != v2.Pointer() {
+		return
+	}
+
+	custom := formatMessage(message...)
+	t.Errorf("%sExpected different references", custom)
+}
+
 // InDelta fails the test if the absolute difference between want and have
 // is greater than the specified delta.
 func InDelta(t *testing.T, want, have, delta float64, message ...any) {
@@ -484,6 +522,20 @@ func WillClose(t *testing.T, ch <-chan struct{}, timeout time.Duration, message 
 	case <-timer.C:
 		custom := formatMessage(message...)
 		t.Fatalf("%stimeout: channel did not close within %v", custom, timeout)
+	}
+}
+
+func isReference(k reflect.Kind) bool {
+	switch k {
+	case reflect.Pointer,
+		reflect.Map,
+		reflect.Slice,
+		reflect.Func,
+		reflect.Chan,
+		reflect.UnsafePointer:
+		return true
+	default:
+		return false
 	}
 }
 

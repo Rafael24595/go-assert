@@ -114,6 +114,46 @@ func TestNotDeepEqual(t *testing.T) {
 	})*/
 }
 
+func TestSame(t *testing.T) {
+	type data struct{ Value int }
+
+	obj1 := &data{Value: 42}
+	//obj2 := &data{Value: 42}
+	obj3 := obj1
+
+	Same(t, obj1, obj3)
+
+	slice1 := []int{1, 2}
+	slice2 := slice1
+	Same(t, slice1, slice2)
+
+	/*t.Run("Should fail if they have the same value but different pointers", func(subT *testing.T) {
+		Same(subT, obj1, obj2)
+	})*/
+
+	/*t.Run("Should fail if not a reference type", func(subT *testing.T) {
+		Same(subT, 10, 10)
+	})*/
+}
+
+func TestNotSame(t *testing.T) {
+	type data struct{ Value int }
+
+	obj1 := &data{Value: 10}
+	obj2 := &data{Value: 10}
+	//obj3 := obj1
+
+	NotSame(t, obj1, obj2)
+
+	s1 := []int{1, 2}
+	s2 := []int{1, 2}
+	NotSame(t, s1, s2)
+
+	/*t.Run("Should fail if they point to the same object", func(subT *testing.T) {
+		NotSame(subT, obj1, obj3)
+	})*/
+}
+
 func TestLessThan(t *testing.T) {
 	t.Run("numbers", func(t *testing.T) {
 		LessThan(t, 20, 10)
