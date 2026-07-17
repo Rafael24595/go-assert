@@ -1,6 +1,6 @@
 package assert
 
-import 	"errors"
+import "errors"
 
 var (
 	errSentinel = errors.New("sentinel error")
