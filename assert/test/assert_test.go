@@ -80,6 +80,40 @@ func TestNotEqual(t *testing.T) {
 	NotEqual(t, "ziglang", "golang")
 }
 
+func TestDeepEqual(t *testing.T) {
+	type person struct {
+		Name string
+		Meta map[string]int
+	}
+
+	p1 := person{Name: "Gopher", Meta: map[string]int{"age": 10}}
+	p2 := person{Name: "Gopher", Meta: map[string]int{"age": 10}}
+
+	DeepEqual(t, p1, p2)
+
+	s1 := []int{1, 2, 3}
+	s2 := []int{1, 2, 3}
+	DeepEqual(t, s1, s2)
+}
+
+func TestNotDeepEqual(t *testing.T) {
+	type user struct {
+		Name string
+		Tags []string
+	}
+
+	u1 := user{Name: "Gopher", Tags: []string{"go", "backend"}}
+	u2 := user{Name: "Ferris", Tags: []string{"rust", "systems"}}
+	//u3 := user{Name: "Gopher", Tags: []string{"go", "backend"}}
+
+	NotDeepEqual(t, u1, u2)
+	NotDeepEqual(t, []int{1, 2}, []int{1, 2, 3})
+
+	/*t.Run("Should fail if they are deeply equal", func(subT *testing.T) {
+		NotDeepEqual(subT, u1, u3)
+	})*/
+}
+
 func TestLessThan(t *testing.T) {
 	t.Run("numbers", func(t *testing.T) {
 		LessThan(t, 20, 10)
@@ -187,22 +221,6 @@ func TestGreaterOrEqual(t *testing.T) {
 func TestInDelta(t *testing.T) {
 	InDelta(t, 0.3, 0.1+0.2, 0.00001)
 	InDelta(t, 100.0, 100.05, 0.1)
-}
-
-func TestDeepEqual(t *testing.T) {
-	type person struct {
-		Name string
-		Meta map[string]int
-	}
-
-	p1 := person{Name: "Gopher", Meta: map[string]int{"age": 10}}
-	p2 := person{Name: "Gopher", Meta: map[string]int{"age": 10}}
-
-	DeepEqual(t, p1, p2)
-
-	s1 := []int{1, 2, 3}
-	s2 := []int{1, 2, 3}
-	DeepEqual(t, s1, s2)
 }
 
 func TestPanic(t *testing.T) {

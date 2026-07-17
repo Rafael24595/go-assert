@@ -116,6 +116,20 @@ func DeepEqual(t *testing.T, want, have any, message ...any) {
 	t.Errorf("%sExpected deep equality.\nWant: %+v\nGot:  %+v", custom, want, have)
 }
 
+// NotDeepEqual fails the test if want and have are deeply equal.
+// It uses reflect.DeepEqual to compare complex structures, slices, and maps.
+func NotDeepEqual(t *testing.T, want, have any, message ...any) {
+	t.Helper()
+	
+	if !reflect.DeepEqual(want, have) {
+		return
+	}
+	
+	custom := formatMessage(message...)
+	
+	t.Errorf("%sExpected values to be deeply different.\nWant: %+v\nGot:  %+v", custom, want, have)
+}
+
 // InDelta fails the test if the absolute difference between want and have
 // is greater than the specified delta.
 func InDelta(t *testing.T, want, have, delta float64, message ...any) {
@@ -146,7 +160,6 @@ func Size[T internal.Number](t *testing.T, want T, have any, message ...any) {
 		t.Fatalf("%sExpected %v, but got %v", formatMessage(message...), want, value)
 	}
 }
-
 
 // Empty fails the test if the length of 'have' is not zero.
 func Empty(t *testing.T, have any, message ...any) {

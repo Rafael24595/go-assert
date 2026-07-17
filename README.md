@@ -135,6 +135,7 @@ The `assert/test` package provides helpers for `testing.T`.
 | `Equal` | Asserts equality between comparable values. |
 | `NotEqual` | Asserts inequality between comparable values. |
 | `DeepEqual` | Asserts deep equality using `reflect.DeepEqual`. |
+| `NotDeepEqual` | Asserts deep inequality using `reflect.DeepEqual`. |
 | `InDelta` | Asserts floating point proximity within a delta. |
 
 ### Ordering Assertions
