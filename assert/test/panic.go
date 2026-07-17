@@ -2,11 +2,10 @@ package assert
 
 import (
 	"fmt"
-	"testing"
 )
 
 // Panic fails the test if the provided function does not panic.
-func Panic(t *testing.T, fn func(), message ...any) {
+func Panic(t T, fn func(), message ...any) {
 	t.Helper()
 
 	custom := formatMessage(message...)
@@ -21,7 +20,7 @@ func Panic(t *testing.T, fn func(), message ...any) {
 }
 
 // PanicWithMessage fails the test if the function does not panic or if the panic message differs.
-func PanicWithMessage(t *testing.T, expected string, fn func(), message ...any) {
+func PanicWithMessage(t T, expected string, fn func(), message ...any) {
 	t.Helper()
 
 	custom := formatMessage(message...)
@@ -38,7 +37,7 @@ func PanicWithMessage(t *testing.T, expected string, fn func(), message ...any) 
 }
 
 // NotPanic fails the test if the provided function panics.
-func NotPanic(t *testing.T, fn func(), message ...any) {
+func NotPanic(t T, fn func(), message ...any) {
 	t.Helper()
 
 	custom := formatMessage(message...)

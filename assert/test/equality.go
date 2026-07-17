@@ -3,11 +3,10 @@ package assert
 import (
 	"math"
 	"reflect"
-	"testing"
 )
 
 // Nil fails the test if the provided item is not nil.
-func Nil(t *testing.T, item any, message ...any) {
+func Nil(t T, item any, message ...any) {
 	t.Helper()
 
 	if isNil(item) {
@@ -19,7 +18,7 @@ func Nil(t *testing.T, item any, message ...any) {
 }
 
 // NotNil fails the test if the provided item is nil or a nil pointer/interface.
-func NotNil(t *testing.T, item any, message ...any) {
+func NotNil(t T, item any, message ...any) {
 	t.Helper()
 
 	if !isNil(item) {
@@ -45,7 +44,7 @@ func isNil(item any) bool {
 }
 
 // True fails the test if the result is false.
-func True(t *testing.T, result bool, message ...any) {
+func True(t T, result bool, message ...any) {
 	t.Helper()
 
 	if result {
@@ -58,7 +57,7 @@ func True(t *testing.T, result bool, message ...any) {
 }
 
 // False fails the test if the result is true.
-func False(t *testing.T, result bool, message ...any) {
+func False(t T, result bool, message ...any) {
 	t.Helper()
 
 	if !result {
@@ -71,7 +70,7 @@ func False(t *testing.T, result bool, message ...any) {
 }
 
 // Equal fails the test if want and have are not equal.
-func Equal[T comparable](t *testing.T, want, have T, message ...any) {
+func Equal[K comparable](t T, want, have K, message ...any) {
 	t.Helper()
 
 	if want == have {
@@ -84,7 +83,7 @@ func Equal[T comparable](t *testing.T, want, have T, message ...any) {
 }
 
 // NotEqual fails the test if want and have are equal.
-func NotEqual[T comparable](t *testing.T, want, have T, message ...any) {
+func NotEqual[K comparable](t T, want, have K, message ...any) {
 	t.Helper()
 
 	if want != have {
@@ -98,7 +97,7 @@ func NotEqual[T comparable](t *testing.T, want, have T, message ...any) {
 
 // DeepEqual fails the test if want and have are not deeply equal.
 // It uses reflect.DeepEqual to compare complex structures, slices, and maps.
-func DeepEqual(t *testing.T, want, have any, message ...any) {
+func DeepEqual(t T, want, have any, message ...any) {
 	t.Helper()
 
 	if reflect.DeepEqual(want, have) {
@@ -112,7 +111,7 @@ func DeepEqual(t *testing.T, want, have any, message ...any) {
 
 // NotDeepEqual fails the test if want and have are deeply equal.
 // It uses reflect.DeepEqual to compare complex structures, slices, and maps.
-func NotDeepEqual(t *testing.T, want, have any, message ...any) {
+func NotDeepEqual(t T, want, have any, message ...any) {
 	t.Helper()
 
 	if !reflect.DeepEqual(want, have) {
@@ -125,7 +124,7 @@ func NotDeepEqual(t *testing.T, want, have any, message ...any) {
 }
 
 // Same fails the test if want and have do not reference the same object.
-func Same(t *testing.T, want, have any, message ...any) {
+func Same(t T, want, have any, message ...any) {
 	t.Helper()
 
 	v1 := reflect.ValueOf(want)
@@ -133,6 +132,7 @@ func Same(t *testing.T, want, have any, message ...any) {
 
 	if !isReference(v1.Kind()) || !isReference(v2.Kind()) {
 		t.Fatalf("Same only supports reference types")
+		return
 	}
 
 	if v1.Pointer() == v2.Pointer() {
@@ -144,7 +144,7 @@ func Same(t *testing.T, want, have any, message ...any) {
 }
 
 // NotSame fails the test if want and have reference the same object.
-func NotSame(t *testing.T, want, have any, message ...any) {
+func NotSame(t T, want, have any, message ...any) {
 	t.Helper()
 
 	v1 := reflect.ValueOf(want)
@@ -152,6 +152,7 @@ func NotSame(t *testing.T, want, have any, message ...any) {
 
 	if !isReference(v1.Kind()) || !isReference(v2.Kind()) {
 		t.Fatalf("NotSame only supports reference types")
+		return
 	}
 
 	if v1.Pointer() != v2.Pointer() {
@@ -164,7 +165,7 @@ func NotSame(t *testing.T, want, have any, message ...any) {
 
 // InDelta fails the test if the absolute difference between want and have
 // is greater than the specified delta.
-func InDelta(t *testing.T, want, have, delta float64, message ...any) {
+func InDelta(t T, want, have, delta float64, message ...any) {
 	t.Helper()
 
 	diff := math.Abs(want - have)

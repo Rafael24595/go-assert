@@ -2,14 +2,13 @@ package assert
 
 import (
 	"errors"
-	"testing"
 )
 
 // ErrorType fails the test if the provided error is not of the expected type.
-func ErrorType[T error](t *testing.T, have error, message ...any) {
+func ErrorType[K error](t T, have error, message ...any) {
 	t.Helper()
 
-	var target T
+	var target K
 	// Aquí &target es un puntero real al tipo T (ej: **customError), lo cual preserva el tipo para errors.As
 	if errors.As(have, &target) {
 		return
@@ -25,10 +24,10 @@ func ErrorType[T error](t *testing.T, have error, message ...any) {
 }
 
 // ErrorNotType fails the test if the provided error is of the specified type.
-func ErrorNotType[T error](t *testing.T, have error, message ...any) {
+func ErrorNotType[K error](t T, have error, message ...any) {
 	t.Helper()
 
-	var target T
+	var target K
 	if !errors.As(have, &target) {
 		return
 	}
@@ -38,7 +37,7 @@ func ErrorNotType[T error](t *testing.T, have error, message ...any) {
 }
 
 // ErrorIs fails the test if the provided error does not match the expected type, even when wrapped.
-func ErrorIs(t *testing.T, want, have error, message ...any) {
+func ErrorIs(t T, want, have error, message ...any) {
 	t.Helper()
 
 	custom := formatMessage(message...)
@@ -56,7 +55,7 @@ func ErrorIs(t *testing.T, want, have error, message ...any) {
 }
 
 // ErrorIsNot fails the test if the provided error matches the specified type, even when wrapped.
-func ErrorIsNot(t *testing.T, want, have error, message ...any) {
+func ErrorIsNot(t T, want, have error, message ...any) {
 	t.Helper()
 
 	if !errors.Is(have, want) {

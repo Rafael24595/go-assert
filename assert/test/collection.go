@@ -3,11 +3,10 @@ package assert
 import (
 	"reflect"
 	"strings"
-	"testing"
 )
 
 // Inside fails the test if the container (string, slice, or array) does not include the item.
-func Inside(t *testing.T, item, container any, message ...any) {
+func Inside(t T, item, container any, message ...any) {
 	t.Helper()
 
 	if inside(t, item, container) {
@@ -19,7 +18,7 @@ func Inside(t *testing.T, item, container any, message ...any) {
 }
 
 // NotInside fails the test if the container includes the item.
-func NotInside(t *testing.T, item, container any, message ...any) {
+func NotInside(t T, item, container any, message ...any) {
 	t.Helper()
 
 	if !inside(t, item, container) {
@@ -30,7 +29,7 @@ func NotInside(t *testing.T, item, container any, message ...any) {
 	t.Errorf("%sExpected collection NOT to contain '%v'", custom, item)
 }
 
-func inside(t *testing.T, item, container any) bool {
+func inside(t T, item, container any) bool {
 	t.Helper()
 
 	val := reflect.ValueOf(container)
@@ -67,7 +66,7 @@ func inside(t *testing.T, item, container any) bool {
 // Deprecated: Use Inside instead.
 //
 // Contains fails the test if the container (string, slice, or array) does not include the item.
-func Contains(t *testing.T, container any, item any, message ...any) {
+func Contains(t T, container any, item any, message ...any) {
 	t.Helper()
 
 	if inside(t, item, container) {
@@ -81,7 +80,7 @@ func Contains(t *testing.T, container any, item any, message ...any) {
 // Deprecated: Use NotInside instead.
 //
 // NotContains fails the test if the container includes the item.
-func NotContains(t *testing.T, container any, item any, message ...any) {
+func NotContains(t T, container any, item any, message ...any) {
 	t.Helper()
 
 	if !inside(t, item, container) {

@@ -1,14 +1,12 @@
 package assert
 
 import (
-	"testing"
-
 	"github.com/Rafael24595/go-assert/assert/internal"
 )
 
 // Size fails the test if the length of 'have' does not match 'want'.
 // It supports Slice, Map, Array, Chan, and String.
-func Size[T internal.Number](t *testing.T, want T, have any, message ...any) {
+func Size[K internal.Number](t T, want K, have any, message ...any) {
 	t.Helper()
 
 	got, ok := internal.CompareMagnitude(have, want)
@@ -23,14 +21,14 @@ func Size[T internal.Number](t *testing.T, want T, have any, message ...any) {
 }
 
 // Empty fails the test if the length of 'have' is not zero.
-func Empty(t *testing.T, have any, message ...any) {
+func Empty(t T, have any, message ...any) {
 	t.Helper()
 
 	Size(t, 0, have, message...)
 }
 
 // NotEmpty fails the test if the length of 'have' is zero.
-func NotEmpty(t *testing.T, have any, message ...any) {
+func NotEmpty(t T, have any, message ...any) {
 	t.Helper()
 
 	GreaterThan(t, 0, have, message...)
@@ -40,14 +38,14 @@ func NotEmpty(t *testing.T, have any, message ...any) {
 //
 // Len fails the test if the length of 'have' does not match 'want'.
 // It supports Slice, Map, Array, Chan, and String.
-func Len[T internal.Number](t *testing.T, want T, have any, message ...any) {
+func Len[K internal.Number](t T, want K, have any, message ...any) {
 	t.Helper()
 
 	Size(t, want, have, message...)
 }
 
 // LessThan fails the test if have is not less than want.
-func LessThan[T internal.Number](t *testing.T, want T, have any, message ...any) {
+func LessThan[K internal.Number](t T, want K, have any, message ...any) {
 	t.Helper()
 
 	got, ok := internal.CompareMagnitude(have, want)
@@ -67,14 +65,14 @@ func LessThan[T internal.Number](t *testing.T, want T, have any, message ...any)
 // Deprecated: Use LessThan instead.
 //
 // Less fails the test if have is not less than want.
-func Less[T internal.Number](t *testing.T, want T, have any, message ...any) {
+func Less[K internal.Number](t T, want K, have any, message ...any) {
 	t.Helper()
 
 	LessThan(t, want, have, message...)
 }
 
 // LessOrEqual fails the test if have is not less than or equal to want.
-func LessOrEqual[T internal.Number](t *testing.T, want T, have any, message ...any) {
+func LessOrEqual[K internal.Number](t T, want K, have any, message ...any) {
 	t.Helper()
 
 	got, ok := internal.CompareMagnitude(have, want)
@@ -92,7 +90,7 @@ func LessOrEqual[T internal.Number](t *testing.T, want T, have any, message ...a
 }
 
 // GreaterThan fails the test if have is not greater than want.
-func GreaterThan[T internal.Number](t *testing.T, want T, have any, message ...any) {
+func GreaterThan[K internal.Number](t T, want K, have any, message ...any) {
 	t.Helper()
 
 	got, ok := internal.CompareMagnitude(have, want)
@@ -112,14 +110,14 @@ func GreaterThan[T internal.Number](t *testing.T, want T, have any, message ...a
 // Deprecated: Use GreaterThan instead.
 //
 // Greater fails the test if have is not greater than want.
-func Greater[T internal.Number](t *testing.T, want T, have any, message ...any) {
+func Greater[K internal.Number](t T, want K, have any, message ...any) {
 	t.Helper()
 
 	GreaterThan(t, want, have, message...)
 }
 
 // GreaterOrEqual fails the test if have is not greater than or equal to want.
-func GreaterOrEqual[T internal.Number](t *testing.T, want T, have any, message ...any) {
+func GreaterOrEqual[K internal.Number](t T, want K, have any, message ...any) {
 	t.Helper()
 
 	got, ok := internal.CompareMagnitude(have, want)

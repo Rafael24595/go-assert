@@ -93,21 +93,23 @@ func TestNotDeepEqual(t *testing.T) {
 
 	u1 := user{Name: "Gopher", Tags: []string{"go", "backend"}}
 	u2 := user{Name: "Ferris", Tags: []string{"rust", "systems"}}
-	//u3 := user{Name: "Gopher", Tags: []string{"go", "backend"}}
+	u3 := user{Name: "Gopher", Tags: []string{"go", "backend"}}
 
 	NotDeepEqual(t, u1, u2)
 	NotDeepEqual(t, []int{1, 2}, []int{1, 2, 3})
 
-	/*t.Run("Should fail if they are deeply equal", func(subT *testing.T) {
-		NotDeepEqual(subT, u1, u3)
-	})*/
+	t.Run("Should fail if they are deeply equal", func(t *testing.T) {
+		spy := &spyT{}
+		NotDeepEqual(spy, u1, u3)
+		True(t, spy.HasFailed)
+	})
 }
 
 func TestSame(t *testing.T) {
 	type data struct{ Value int }
 
 	obj1 := &data{Value: 42}
-	//obj2 := &data{Value: 42}
+	obj2 := &data{Value: 42}
 	obj3 := obj1
 
 	Same(t, obj1, obj3)
@@ -116,13 +118,17 @@ func TestSame(t *testing.T) {
 	slice2 := slice1
 	Same(t, slice1, slice2)
 
-	/*t.Run("Should fail if they have the same value but different pointers", func(subT *testing.T) {
-		Same(subT, obj1, obj2)
-	})*/
+	t.Run("Should fail if they have the same value but different pointers", func(subT *testing.T) {
+		spy := &spyT{}
+		Same(spy, obj1, obj2)
+		True(t, spy.HasFailed)
+	})
 
-	/*t.Run("Should fail if not a reference type", func(subT *testing.T) {
-		Same(subT, 10, 10)
-	})*/
+	t.Run("Should fail if not a reference type", func(subT *testing.T) {
+		spy := &spyT{}
+		Same(spy, 10, 10)
+		True(t, spy.HasFatal)
+	})
 }
 
 func TestNotSame(t *testing.T) {
@@ -130,7 +136,7 @@ func TestNotSame(t *testing.T) {
 
 	obj1 := &data{Value: 10}
 	obj2 := &data{Value: 10}
-	//obj3 := obj1
+	obj3 := obj1
 
 	NotSame(t, obj1, obj2)
 
@@ -138,9 +144,17 @@ func TestNotSame(t *testing.T) {
 	s2 := []int{1, 2}
 	NotSame(t, s1, s2)
 
-	/*t.Run("Should fail if they point to the same object", func(subT *testing.T) {
-		NotSame(subT, obj1, obj3)
-	})*/
+	t.Run("Should fail if they point to the same object", func(subT *testing.T) {
+		spy := &spyT{}
+		NotSame(spy, obj1, obj3)
+		True(t, spy.HasFailed)
+	})
+
+	t.Run("Should fail if not a reference type", func(subT *testing.T) {
+		spy := &spyT{}
+		NotSame(spy, 10, 10)
+		True(t, spy.HasFatal)
+	})
 }
 
 func TestInDelta(t *testing.T) {

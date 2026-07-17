@@ -1,13 +1,12 @@
 package assert
 
 import (
-	"testing"
 	"time"
 )
 
 // WillClose fails the test if the provided channel does not close or
 // receive a signal within the specified timeout duration.
-func WillClose(t *testing.T, ch <-chan struct{}, timeout time.Duration, message ...any) {
+func WillClose(t T, ch <-chan struct{}, timeout time.Duration, message ...any) {
 	t.Helper()
 
 	timer := time.NewTimer(timeout)
