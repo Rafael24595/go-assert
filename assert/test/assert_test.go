@@ -1,27 +1,11 @@
 package assert
 
 import (
-	"errors"
 	"fmt"
 	"math"
 	"strings"
 	"testing"
 	"time"
-)
-
-type MyInt int
-
-type customError struct{}
-
-func (e *customError) Error() string { return "" }
-
-type anotherCustomError struct{}
-
-func (e *anotherCustomError) Error() string { return "" }
-
-var (
-	errSentinel = errors.New("sentinel error")
-	errAnother  = errors.New("another error")
 )
 
 func TestNilDeep(t *testing.T) {
@@ -284,10 +268,10 @@ func TestPanic(t *testing.T) {
 }
 
 func TestCustomTypes(t *testing.T) {
-	var a MyInt = 10
-	var b MyInt = 10
+	var a customInt = 10
+	var b customInt = 10
 	Equal(t, a, b)
-	Greater(t, MyInt(5), a)
+	Greater(t, customInt(5), a)
 }
 
 func TestSize(t *testing.T) {
