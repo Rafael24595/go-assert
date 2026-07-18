@@ -135,6 +135,9 @@ The `assert/test` package provides helpers for `testing.T`.
 | `Equal` | Asserts equality between comparable values. |
 | `NotEqual` | Asserts inequality between comparable values. |
 | `DeepEqual` | Asserts deep equality using `reflect.DeepEqual`. |
+| `NotDeepEqual` | Asserts deep inequality using `reflect.DeepEqual`. |
+| `Same` | Asserts that two reference types point to the same object. |
+| `NotSame` | Asserts that two reference types do not point to the same object. |
 | `InDelta` | Asserts floating point proximity within a delta. |
 
 ### Ordering Assertions
@@ -192,6 +195,31 @@ Supported containers:
 | Assertion | Description |
 |:--|:--|
 | `WillClose` | Asserts that a channel closes or receives before timeout. |
+
+### Advanced: Custom Assertions & Mocking
+
+All testing helpers use the `assert.T` interface instead of a rigid `*testing.T` pointer. This allows you to build your own domain-specific assertions:
+
+```go
+import (
+    "testing"
+
+    assert "github.com/Rafael24595/go-assert/assert/test"
+)
+
+func AssertValidUser(t assert.T, u User) {
+    t.Helper()
+
+    assert.NotEmpty(t, u.ID, "User ID should not be empty")
+    assert.Inside(t, "@", u.Email, "User must have a valid email")
+}
+
+func TestUserCreation(t *testing.T) {
+    u := User{ID: "123", Email: "gopher@golang.org"}
+    
+    AssertValidUser(t, u)
+}
+```
 
 ---
 
