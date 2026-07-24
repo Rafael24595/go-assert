@@ -149,3 +149,36 @@ func TestGreaterOrEqual(t *testing.T) {
 		Greater(t, customInt(5), a)
 	})
 }
+
+func TestCapacity(t *testing.T) {
+	t.Run("slice capacity", func(t *testing.T) {
+		s := make([]int, 2, 10)
+		Capacity(t, 10, s)
+	})
+
+	t.Run("array capacity", func(t *testing.T) {
+		arr := [5]int{1, 2, 3}
+		Capacity(t, 5, arr)
+	})
+
+	t.Run("channel capacity", func(t *testing.T) {
+		ch := make(chan int, 8)
+		ch <- 1
+		ch <- 2
+		Capacity(t, 8, ch)
+	})
+
+	t.Run("different numeric types for want", func(t *testing.T) {
+		s := make([]string, 0, 4)
+		Capacity(t, uint(4), s)
+		Capacity(t, float64(4.0), s)
+		Capacity(t, int64(4), s)
+	})
+
+	t.Run("pointer to slice or array", func(t *testing.T) {
+		s := make([]int, 0, 6)
+		arr := [4]int{1, 2}
+		Capacity(t, 6, &s)
+		Capacity(t, 4, &arr)
+	})
+}

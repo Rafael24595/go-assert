@@ -133,3 +133,19 @@ func GreaterOrEqual[K internal.Number](t T, want K, have any, message ...any) {
 
 	t.Errorf("%sExpected greater or equal than %v, but got %v", custom, want, have)
 }
+
+// Capacity fails the test if the capacity of 'have' does not match 'want'.
+// It supports Slice, Array, and Chan.
+func Capacity[K internal.Number](t T, want K, have any, message ...any) {
+	t.Helper()
+
+	got, ok := internal.CompareCapacity(have, want)
+	if !ok {
+		t.Fatalf("Capacity(): %T is not capacity-measurable or convertible to %T", have, want)
+	}
+
+	if got != 0 {
+		value, _ := internal.CapacityOf(have)
+		t.Fatalf("%sExpected capacity %v, but got %v", formatMessage(message...), want, value)
+	}
+}
