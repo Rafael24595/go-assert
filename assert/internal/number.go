@@ -41,9 +41,9 @@ type Float interface {
 
 type magnitude struct {
 	kind numberKind
-	i int64
-	u uint64
-	f float64
+	i    int64
+	u    uint64
+	f    float64
 }
 
 func signedMagnitude[T Signed](v T) magnitude {
@@ -68,7 +68,9 @@ func floatMagnitude[T Float](v T) magnitude {
 }
 
 func measureMagnitude(v any) (magnitude, bool) {
-	rv := reflect.ValueOf(v)
+	rv := dereferencePointer(
+		reflect.ValueOf(v),
+	)
 
 	switch rv.Kind() {
 	case reflect.Array,
@@ -86,7 +88,9 @@ func measureMagnitude(v any) (magnitude, bool) {
 }
 
 func extractMagnitude(v any) (magnitude, bool) {
-	rv := reflect.ValueOf(v)
+	rv := dereferencePointer(
+		reflect.ValueOf(v),
+	)
 
 	switch rv.Kind() {
 	case reflect.Int,
@@ -137,7 +141,7 @@ func magnitudeFrom(v any) (magnitude, bool) {
 // it returns their length.
 //
 // The second return value reports whether v has a comparable magnitude.
-func MagnitudeOf(v any) (any, bool){
+func MagnitudeOf(v any) (any, bool) {
 	n, ok := magnitudeFrom(v)
 	if !ok {
 		return nil, false
@@ -250,4 +254,14 @@ func compareFloat(f float64, n magnitude) (int, bool) {
 	}
 
 	return 0, false
+}
+
+func dereferencePointer(v reflect.Value) reflect.Value {
+	for {
+		if v.Kind() != reflect.Pointer {
+			return v
+		}
+
+		v = v.Elem()
+	}
 }

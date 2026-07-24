@@ -149,6 +149,8 @@ func TestMagnitudeOf(t *testing.T) {
 		{"bool", true, nil, false},
 		{"struct", struct{}{}, nil, false},
 		{"nil", nil, nil, false},
+
+		{"pointer", &[]int{1, 2, 3}, uint64(3), true},
 	}
 
 	for _, tt := range tests {
