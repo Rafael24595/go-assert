@@ -158,6 +158,7 @@ Measurable values are compared using `len(...)`.
 | `LessOrEqual` | Asserts `have <= want`. |
 | `GreaterThan` | Asserts `have > want`. |
 | `GreaterOrEqual` | Asserts `have >= want`. |
+| `Capacity` | Asserts `cap(have) == want`. |
 
 ### Collection Assertions
 
