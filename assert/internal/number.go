@@ -256,6 +256,86 @@ func compareFloat(f float64, n magnitude) (int, bool) {
 	return 0, false
 }
 
+// CapacityOf returns the comparable capacity of v.
+//
+// For numeric values, it returns the numeric value itself.
+//
+// For measurable values (arrays, slices, maps, strings, and channels),
+// it returns their capacity.
+//
+// The second return value reports whether v has a comparable magnitude.
+func CapacityOf(v any) (any, bool) {
+	n, ok := capacityFrom(v)
+	if !ok {
+		return nil, false
+	}
+
+	switch n.kind {
+	case kindSigned:
+		return n.i, true
+	case kindUnsigned:
+		return n.u, true
+	case kindFloating:
+		return n.f, true
+	}
+
+	return nil, false
+}
+
+// CompareCapacity compares the capacity of two numeric or measurable values.
+// 
+// Numeric values may be of different built-in numeric types. Measurable values
+// (arrays, slices, maps, strings, and channels) are compared using their
+// capacity.
+// 
+// It returns:
+// 
+//	-1 if a < b
+//	 0 if a == b
+//	 1 if a > b
+// The second return value reports whether both operands could be compared.
+// It is false if either value is neither numeric nor measurable, or if the
+// comparison cannot be performed safely without losing numeric precision.
+func CompareCapacity(a, b any) (int, bool) {
+   na, ok := capacityFrom(a)
+	if !ok {
+		return 0, false
+	}
+
+	nb, ok := capacityFrom(b)
+	if !ok {
+		return 0, false
+	}
+
+	return compare(na, nb)
+}
+
+func capacityFrom(v any) (magnitude, bool) {
+	if n, ok := extractMagnitude(v); ok {
+		return n, true
+	}
+
+	return measureCapacity(v)
+}
+
+func measureCapacity(v any) (magnitude, bool) {
+	rv := dereferencePointer(
+		reflect.ValueOf(v),
+	)
+
+	switch rv.Kind() {
+	case reflect.Array,
+		reflect.Slice,
+		reflect.Chan:
+
+		return unsignedMagnitude(
+			uint64(rv.Cap()),
+		), true
+	}
+
+	return magnitude{}, false
+}
+
 func dereferencePointer(v reflect.Value) reflect.Value {
 	for {
 		if v.Kind() != reflect.Pointer {
