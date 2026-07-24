@@ -13,47 +13,39 @@ func TestCompareMagnitudes(t *testing.T) {
 		want int
 		ok   bool
 	}{
-		// Signed
 		{"int equal", 1, 1, 0, true},
 		{"int less", 1, 2, -1, true},
 		{"int greater", 2, 1, 1, true},
 
-		// Unsigned
-		{"uint equal", uint(1), uint(1), 0, true},
-		{"uint less", uint(1), uint(2), -1, true},
-		{"uint greater", uint(2), uint(1), 1, true},
+		{"uint equal", 1, 1, 0, true},
+		{"uint less", 1, 2, -1, true},
+		{"uint greater", 2, 1, 1, true},
 
-		// Float
 		{"float equal", 3.0, 3.0, 0, true},
 		{"float less", 3.0, 4.0, -1, true},
 		{"float greater", 4.0, 3.0, 1, true},
 
-		// Signed <-> unsigned
-		{"signed == unsigned", 5, uint(5), 0, true},
-		{"signed < unsigned", 4, uint(5), -1, true},
-		{"signed > unsigned", 6, uint(5), 1, true},
+		{"signed == unsigned", 5, 5, 0, true},
+		{"signed < unsigned", 4, 5, -1, true},
+		{"signed > unsigned", 6, 5, 1, true},
 
-		{"negative < unsigned", -1, uint(0), -1, true},
-		{"unsigned > negative", uint(0), -1, 1, true},
+		{"negative < unsigned", -1, 0, -1, true},
+		{"unsigned > negative", 0, -1, 1, true},
 
 		{"max uint > zero", uint64(math.MaxUint64), 0, 1, true},
 		{"zero < max uint", 0, uint64(math.MaxUint64), -1, true},
 
-		// Float <-> signed
 		{"float == int", 3.0, 3, 0, true},
 		{"float > int", 3.1, 3, 1, true},
 		{"float < int", 2.9, 3, -1, true},
 
-		// Float <-> unsigned
-		{"float == uint", 3.0, uint(3), 0, true},
-		{"float > uint", 3.1, uint(3), 1, true},
-		{"float < uint", 2.9, uint(3), -1, true},
+		{"float == uint", 3.0, 3, 0, true},
+		{"float > uint", 3.1, 3, 1, true},
+		{"float < uint", 2.9, 3, -1, true},
 
-		// Exact float boundary
 		{"2^53", float64(1 << 53), uint64(1 << 53), 0, true},
 		{"2^53+1", float64((1 << 53) + 1), uint64((1 << 53) + 1), 0, false},
 
-		// NaN
 		{"NaN", math.NaN(), 0, 0, false},
 		{"NaN NaN", math.NaN(), math.NaN(), 0, false},
 	}
