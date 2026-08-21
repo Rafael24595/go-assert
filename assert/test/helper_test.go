@@ -13,10 +13,13 @@ var (
 type spyT struct {
 	HasFailed bool
 	HasFatal  bool
+	IsHelper  bool
 	Message   string
 }
 
-func (s *spyT) Helper() {}
+func (s *spyT) Helper() {
+	s.IsHelper = true
+}
 
 func (s *spyT) Errorf(format string, args ...any) {
 	s.HasFailed = true
