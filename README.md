@@ -197,6 +197,12 @@ Supported containers:
 |:--|:--|
 | `WillClose` | Asserts that a channel closes or receives before timeout. |
 
+### Flow Assertions
+
+| Assertion | Description |
+|:--|:--|
+| `Unreachable` | Asserts that a code path is never executed, failing the test immediately if reached. |
+
 ### Advanced: Custom Assertions & Mocking
 
 All testing helpers use the `assert.T` interface instead of a rigid `*testing.T` pointer. This allows you to build your own domain-specific assertions:
