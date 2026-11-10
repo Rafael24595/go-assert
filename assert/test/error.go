@@ -9,7 +9,6 @@ func ErrorType[K error](t T, have error, message ...any) {
 	t.Helper()
 
 	var target K
-	// Aquí &target es un puntero real al tipo T (ej: **customError), lo cual preserva el tipo para errors.As
 	if errors.As(have, &target) {
 		return
 	}
