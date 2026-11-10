@@ -34,3 +34,11 @@ func TestFormatMessage(t *testing.T) {
 		}
 	})
 }
+
+func TestFormatMessageWithoutFormatString(t *testing.T) {
+	got := FormatMessage(42, "golang", true)
+	want := "42 golang true"
+	if got != want {
+		t.Errorf("Expected %q, got %q", want, got)
+	}
+}

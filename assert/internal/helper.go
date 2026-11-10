@@ -1,6 +1,9 @@
 package internal
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // FormatMessage processes the input arguments to return a formatted string.
 // If the first argument is a string, it is treated as a format specifier.
@@ -14,5 +17,10 @@ func FormatMessage(message ...any) string {
 		return fmt.Sprintf(format, message[1:]...)
 	}
 
-	return fmt.Sprintf("%v", message...)
+	parts := make([]string, len(message))
+	for i, m := range message {
+		parts[i] = fmt.Sprint(m)
+	}
+	
+	return strings.Join(parts, " ")
 }
