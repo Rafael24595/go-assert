@@ -39,18 +39,18 @@ func ErrorNotType[K error](t T, have error, message ...any) {
 func ErrorIs(t T, want, have error, message ...any) {
 	t.Helper()
 
-	custom := formatMessage(message...)
-
-	if have == nil {
-		t.Errorf("%sExpected error of type %T, but got nil", custom, want)
-		return
-	}
-
 	if errors.Is(have, want) {
 		return
 	}
 
-	t.Errorf("%sExpected error of type %T, but got %T (%v)", custom, want, have, have)
+	custom := formatMessage(message...)
+
+	if have == nil {
+		t.Errorf("%sExpected error %q, but got nil", custom, want)
+		return
+	}
+
+	t.Errorf("%sExpected error %q, but got %q", custom, want, have)
 }
 
 // ErrorIsNot fails the test if the provided error matches the specified type, even when wrapped.
@@ -62,5 +62,5 @@ func ErrorIsNot(t T, want, have error, message ...any) {
 	}
 
 	custom := formatMessage(message...)
-	t.Errorf("%sUnexpected error of type %T received", custom, want)
+	t.Errorf("%sExpected error not to match %q, but got %q", custom, want, have)
 }

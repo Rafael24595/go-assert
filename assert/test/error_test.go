@@ -51,3 +51,27 @@ func TestErrorIsNot(t *testing.T) {
 		ErrorIsNot(t, errSentinel, have)
 	})
 }
+
+func TestErrorIsReportsValues(t *testing.T) {
+	t.Run("Different error", func(t *testing.T) {
+		spy := &spyT{}
+		ErrorIs(spy, errSentinel, errAnother)
+		True(t, spy.HasFailed)
+		Equal(t, fmt.Sprintf("Expected error %q, but got %q", errSentinel, errAnother), spy.Message)
+	})
+
+	t.Run("Nil error", func(t *testing.T) {
+		spy := &spyT{}
+		ErrorIs(spy, errSentinel, nil)
+		True(t, spy.HasFailed)
+		Equal(t, fmt.Sprintf("Expected error %q, but got nil", errSentinel), spy.Message)
+	})
+}
+
+func TestErrorIsNotReportsValues(t *testing.T) {
+	spy := &spyT{}
+	have := fmt.Errorf("context: %w", errSentinel)
+	ErrorIsNot(spy, errSentinel, have)
+	True(t, spy.HasFailed)
+	Equal(t, fmt.Sprintf("Expected error not to match %q, but got %q", errSentinel, have), spy.Message)
+}
