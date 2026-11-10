@@ -1,6 +1,6 @@
 //go:build !g_ast_dbg && !g_ast_wrt
 
-package assert
+package invariant
 
 // Unreachable is a no-op in this build configuration.
 func Unreachable(a ...any) {}

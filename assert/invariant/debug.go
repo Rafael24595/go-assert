@@ -1,6 +1,6 @@
 //go:build g_ast_dbg && !g_ast_wrt
 
-package assert
+package invariant
 
 import "github.com/Rafael24595/go-assert/assert/internal"
 
