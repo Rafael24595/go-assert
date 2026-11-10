@@ -14,7 +14,7 @@ func Nil(t T, item any, message ...any) {
 	}
 
 	custom := formatMessage(message...)
-	t.Errorf("%sExpected nil value", custom)
+	t.Errorf("%sExpected nil, but got %v (%T)", custom, item, item)
 }
 
 // NotNil fails the test if the provided item is nil or a nil pointer/interface.

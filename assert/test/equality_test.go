@@ -1,6 +1,7 @@
 package assert
 
 import (
+	"errors"
 	"strings"
 	"testing"
 )
@@ -22,6 +23,13 @@ func TestNilDeep(t *testing.T) {
 		Nil(t, m)
 		Nil(t, c)
 	})
+}
+
+func TestNilReportsTheValue(t *testing.T) {
+	spy := &spyT{}
+	Nil(spy, errors.New("boom"))
+	True(t, spy.HasFailed)
+	Equal(t, "Expected nil, but got boom (*errors.errorString)", spy.Message)
 }
 
 func TestNotNilDeep(t *testing.T) {
